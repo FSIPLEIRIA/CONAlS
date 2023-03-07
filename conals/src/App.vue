@@ -1,7 +1,7 @@
 <template>
-  <div id="app">
+  
 	<Canvas/>
-  </div>
+  
 </template>
 
 <script>
