@@ -78,6 +78,8 @@ export default {
       stage.destroyChildren();
 
       var layer2 = new Konva.Layer();
+      var layer3 = new Konva.Layer();
+      var layer4 = new Konva.Layer();
       //centered image
       var imageObj = new window.Image();
       
@@ -93,10 +95,49 @@ export default {
       });
       imageObj.src = image;
       layer2.add(img);
+      
       stage.add(layer2);
-
+      stage.add(layer3);
+      stage.add(layer4);
       //onclick image draw a point
-
+      //on left click add a point in image 
+      //on right click add point 2 in image
+      img.on('click', function(e) {
+        //only left click
+        if(e.evt.button != 0) return;
+        
+        layer3.destroyChildren();
+        var mousePos = stage.getPointerPosition();
+        var point = new Konva.Circle({
+          x: mousePos.x,
+          y: mousePos.y,
+          radius: 5,
+          fill: 'red',
+          stroke: 'black',
+          strokeWidth: 4,
+          
+        });
+        layer3.add(point);
+        layer3.draw();
+      });
+      img.on('contextmenu', function(e) {
+        e.evt.preventDefault();
+        //override right click
+       
+        var mousePos = stage.getPointerPosition();
+        layer4.destroyChildren();
+        var point = new Konva.Circle({
+          x: mousePos.x,
+          y: mousePos.y,
+          radius: 5,
+          fill: 'blue',
+          stroke: 'black',
+          strokeWidth: 4,
+          
+        });
+        layer4.add(point);
+        layer4.draw();
+      });
 
       //stage.batchDraw();
 
