@@ -33,6 +33,6 @@ components: {
   background: #2c3e50;
   top: 0px;
   left: 0px;
-
+  overflow: hidden;
 }
 </style>

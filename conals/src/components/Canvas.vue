@@ -6,8 +6,8 @@
     .navbar-title
       h1 Conals
     .navbar-options
-      label(for="draggable") Draggable
-      input(type="checkbox" name="draggable" v-model="draggable"  @input="toggleDraggable")
+      label(for="draggable") Move Image
+      input(type="checkbox" name="draggable" id="draggable" v-model="draggable" )
   #container
 </template>
 <script>
@@ -130,6 +130,7 @@ export default {
     this.loadingScreenLogic(stage);
 
     this.fetchImage().then((image) => {
+      
       stage.destroyChildren();
 
       var layer2 = new Konva.Layer();
@@ -143,7 +144,7 @@ export default {
       
       //centered image
       var imageObj = new window.Image();
-      
+      var crutch = this;
       var img = new Konva.Image({
         x: (window.innerWidth)/2,
         y: (window.innerHeight)/2,
@@ -151,6 +152,9 @@ export default {
         height: 500,
         image: imageObj,
         draggable: this.draggable, 
+        dragBoundFunc: function (pos, e) {
+          return !crutch.draggable ? this.getAbsolutePosition() : pos;
+        }
         
         
       });
@@ -164,12 +168,11 @@ export default {
       //onclick image draw a point
       //on left click add a point in image 
       //on right click add point 2 in image
-      var crutch = this;
-      img.on('click', function(e) {
+      
+      function red(e) {
         //only left click
         if(e.evt.button != 0) return;
         crutch.draggable=false;
-        this.draggable(crutch.draggable)
         layer3.destroyChildren();
         var mousePos = stage.getPointerPosition();
         var point = new Konva.Circle({
@@ -182,13 +185,12 @@ export default {
         });
         layer3.add(point);
         layer3.draw();
-      });
-      img.on('contextmenu', function(e) {
+      }
+      function blue (e) {
         e.evt.preventDefault();
         //override right click
 
         crutch.draggable=false;
-        this.draggable(crutch.draggable)
         var mousePos = stage.getPointerPosition();
         layer4.destroyChildren();
         var point = new Konva.Circle({
@@ -200,7 +202,25 @@ export default {
         });
         layer4.add(point);
         layer4.draw();
-      });
+      }
+
+      img.on('dragstart', function(e) {
+        if(crutch.draggable==true) return;  
+        //make it s that the image is static when the user is drawing a rectangle
+
+
+        red(e);
+      }); 
+      img.on('dragmove', function(e) {
+        if(crutch.draggable==true) return; 
+        blue(e);
+      }); 
+      img.on('click', red);
+      //img on drag
+     
+
+      
+      img.on('contextmenu', blue);
       //on enter draw a rectangle between the two points
       // on return key press draw rectangle
       
@@ -285,8 +305,9 @@ const normalizeBox = (rects, labels,origin)=>{
 </script>
 
 <style scoped>
+
 .navbar {
-  position: fixed;
+  position: sticky;
   display: flex;
   flex-direction: row;
   /* separate each child */
